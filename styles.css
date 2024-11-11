@@ -1,0 +1,56 @@
+/* styles.css */
+
+/* Paleta de colores */
+:root {
+    --primary-color: #002F6C; /* Azul oscuro */
+    --secondary-color: #0072CE; /* Azul claro */
+    --background-color: #f8f9fa; /* Fondo claro */
+    --text-color: #002F6C; /* Texto principal */
+    --highlight-color: #FFD700; /* Opcional: Para resaltar detalles */
+  }
+  
+  /* Tipografía */
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  /* Navbar */
+  .navbar {
+    background-color: var(--primary-color);
+  }
+  .navbar-brand {
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* Secciones de contenido */
+  .qr-section, .details-section, .map-section {
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Botones */
+  .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  /* Estilo del video del QR */
+  .qr-placeholder video {
+    border: 3px solid var(--secondary-color);
+    border-radius: 8px;
+  }
+  
+  /* Map Section */
+  .map-section img {
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+  }
+  
