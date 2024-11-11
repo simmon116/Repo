@@ -80,14 +80,23 @@
   </section>
 
   <!-- Map Section -->
-  <section class="map-section d-none" id="mapSection">
+  <section class="map-section" id="mapSection">
     <div class="container">
       <h2>Mapa del Campus</h2>
-      <p>Aquí puedes ver la ubicación de todos los salones y áreas de interés del campus.</p>
-      <img src="map_placeholder.png" alt="Mapa del Campus" class="img-fluid">
+      <p>Explora los principales puntos de interés del campus.</p>
+      <div class="map-container">
+        <img src="images/Vista_Aerea.png" alt="Mapa del Campus">
+      
+        <!-- Marcador ejemplo para el salón principal -->
+        <div class="map-marker" style="top: 50%; left: 60%;" title="Salón Principal">
+          <span class="marker-icon">📍</span>
+        </div>
+  
+        <!-- Agrega más marcadores como sea necesario -->
+      </div>
     </div>
   </section>
-
+  
   <script>
     let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
     

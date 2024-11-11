@@ -53,4 +53,32 @@
     border: 2px solid var(--primary-color);
     border-radius: 8px;
   }
-  
+   /* Contenedor del mapa */
+.map-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  border: 2px solid var(--primary-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.map-image {
+  width: 100%;
+  height: auto;
+}
+
+/* Marcadores interactivos */
+.map-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--highlight-color);
+  transition: transform 0.2s ease;
+}
+
+.map-marker:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+}
