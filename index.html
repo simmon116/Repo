@@ -1,54 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ClassMapAR - Localización de Salones y Horarios</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/instascan@1.0.0/instascan.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-
+  <link rel="stylesheet" href="styles.css">
   <style>
-    /* Colores de la universidad */
-    :root {
-      --primary-color: #002F6C; /* Azul oscuro */
-      --secondary-color: #0072CE; /* Azul claro */
-      --background-color: #f0f8ff; /* Fondo claro */
+    .map-section, .details-section {
+      display: none;
     }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--background-color);
-      color: var(--primary-color);
-    }
-
-    /* Estilos personalizados */
-    .navbar {
-      background-color: var(--primary-color);
-    }
-    .navbar-brand {
-      color: white;
-    }
-    .qr-section, .details-section, .map-section {
-      padding: 2rem;
-      text-align: center;
-    }
-    .qr-placeholder {
-      border: 2px dashed var(--secondary-color);
-      padding: 50px;
-      border-radius: 10px;
-      color: var(--secondary-color);
-    }
-    .btn-primary {
-      background-color: var(--primary-color);
-      border: none;
-    }
-    .btn-primary:hover {
-      background-color: var(--secondary-color);
+    .map-section {
+      display: block;
     }
   </style>
 </head>
+
 <body>
 
   <!-- Navbar -->
@@ -64,17 +34,17 @@
       <h2>Escanea el Código QR</h2>
       <p>Escanea el QR para ver información del salón y horarios disponibles.</p>
       <div class="qr-placeholder">
-        <video id="preview" class="w-100"></video>
+        <video id="preview" class="w-100" alt="Vista de cámara QR"></video>
       </div>
     </div>
   </section>
 
-  <!-- Details Section -->
-  <section class="details-section d-none" id="detailsSection">
+  <!-- Details Section (inicialmente oculta) -->
+  <section class="details-section" id="detailsSection">
     <div class="container">
       <h2>Detalles del Salón</h2>
-      <p id="salonInfo">Nombre del Salón: 102A</p>
-      <p id="horarioInfo">Horario Disponible: Lunes a Viernes, 8:00 - 18:00</p>
+      <h3 id="salonName">N/A</h3>
+      <div id="salonDetails"></div>
       <button class="btn btn-primary" onclick="goToMap()">Ver Mapa</button>
     </div>
   </section>
@@ -85,47 +55,90 @@
       <h2>Mapa del Campus</h2>
       <p>Explora los principales puntos de interés del campus.</p>
       <div class="map-container">
-        <img src="images/Vista_Aerea.png" alt="Mapa del Campus">
-      
-        <!-- Marcador ejemplo para el salón principal -->
-        <div class="map-marker" style="top: 50%; left: 60%;" title="Salón Principal">
+        <img src="images/Vista_Aerea.png" alt="Vista aérea del campus" class="map-image">
+
+        <!-- Marcadores ajustados -->
+        <div class="map-marker" style="top: 35%; left: 18%;" title="Edificio de aulas y laboratorios" onclick="showDetails('Edificio de aulas y laboratorios')">
+          <span class="marker-icon">📍</span>
+        </div>
+        
+        <div class="map-marker" style="top: 85%; left: 40%;" title="Edificio Francisco de Sales" onclick="showDetails('Edificio Francisco de Sales')">
+          <span class="marker-icon">📍</span>
+        </div>
+        
+        <div class="map-marker" style="top: 70%; left: 39%;" title="Bloque recreativo" onclick="showDetails('Bloque recreativo')">
           <span class="marker-icon">📍</span>
         </div>
   
-        <!-- Agrega más marcadores como sea necesario -->
+        <div class="map-marker" style="top: 90%; left: 50%;" title="Salida" onclick="showDetails('Salida')">
+          <span class="marker-icon">📍</span>
+        </div>
       </div>
     </div>
   </section>
-  
+
   <script>
-    let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-    
-    scanner.addListener('scan', function (content) {
-      alert('Código QR detectado: ' + content);
-      showDetails(content);
-    });
+    // Objeto con la información de edificios y aulas
+    const campusData = {
+      "Edificio de aulas y laboratorios": [
+        { name: "Aula 101", horario: "8:00 - 10:00", profesor: "Prof. Juan Pérez", grupo: "Grupo A" },
+        { name: "Aula 102", horario: "10:00 - 12:00", profesor: "Prof. Ana García", grupo: "Grupo B" },
+        { name: "Aula 103", horario: "12:00 - 14:00", profesor: "Prof. Luis Sánchez", grupo: "Grupo C" },
+        { name: "Laboratorio 1", horario: "14:00 - 16:00", profesor: "Prof. Clara Gómez", grupo: "Grupo D" }
+      ],
+      "Edificio Francisco de Sales": [
+        { name: "Oficina de Administración", horario: "8:00 - 12:00", profesor: "Martín Gómez" },
+        { name: "Oficina de Finanzas", horario: "12:00 - 14:00", profesor: "Ana Torres" },
+        { name: "Oficina de Recursos Humanos", horario: "14:00 - 16:00", profesor: "Laura Martínez" }
+      ],
+      "Bloque recreativo": [
+        { name: "Aula de descanso", horario: "8:00 - 12:00 / 13:00 - 20:00", profesor: "Prof. Raúl Torres" },
+        { name: "Gym", horario: "8:00 - 12:00 / 13:00 - 20:00", profesor: "Prof. Claudia Díaz" },
+        { name: "Ping-pong", horario: "8:00 - 12:00 / 13:00 - 20:00", profesor: "Prof. Esteban Ruiz" }
+      ],
+      "Salida": [
+        { name: "Salida", horario: "6:30 - 22:00", profesor: "Guarda de turno" }
+      ]
+    };
 
-    Instascan.Camera.getCameras().then(function (cameras) {
-      if (cameras.length > 0) {
-        scanner.start(cameras[0]);
-      } else {
-        console.error('No se encontraron cámaras.');
-        alert('No se encontró una cámara para escanear el código QR.');
+    // Función para mostrar los detalles del edificio o lugar
+    function showDetails(edificio) {
+      const aulas = campusData[edificio];
+
+      if (aulas) {
+        // Título de la sección con el nombre del edificio
+        document.getElementById('salonName').textContent = edificio;
+
+        // Limpiar el contenedor de detalles anteriores
+        const salonDetails = document.getElementById('salonDetails');
+        salonDetails.innerHTML = ''; // Limpiar detalles previos
+
+        // Mostrar la información de todas las aulas dentro del lugar
+        aulas.forEach(aula => {
+          const aulaDiv = document.createElement('div');
+          aulaDiv.classList.add('aula-info');
+          aulaDiv.innerHTML = `
+            <h4>${aula.name}</h4>
+            <p><strong>Horario:</strong> ${aula.horario}</p>
+            <p><strong>Profesor:</strong> ${aula.profesor}</p>
+            ${aula.grupo ? `<p><strong>Grupo:</strong> ${aula.grupo}</p>` : ''}
+          `;
+          salonDetails.appendChild(aulaDiv);
+        });
+
+        // Mostrar la sección de detalles y ocultar el mapa
+        document.getElementById('detailsSection').style.display = 'block';
+        document.getElementById('mapSection').style.display = 'none';
       }
-    }).catch(function (e) {
-      console.error(e);
-    });
-
-    function showDetails(content) {
-      document.getElementById("detailsSection").classList.remove("d-none");
-      document.getElementById("salonInfo").innerText = "Salón: " + content;
-      document.getElementById("qr-section").classList.add("d-none");
     }
 
+    // Función para volver al mapa
     function goToMap() {
-      document.getElementById("mapSection").classList.remove("d-none");
-      document.getElementById("detailsSection").classList.add("d-none");
+      document.getElementById('detailsSection').style.display = 'none';
+      document.getElementById('mapSection').style.display = 'block';
     }
   </script>
+
 </body>
+
 </html>
