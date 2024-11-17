@@ -120,3 +120,59 @@ button:hover {
   margin-bottom: 20px;
 }
 
+/* Recorridos Section */
+.recorridos-section {
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.recorridos-section h2 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+#recorridosForm .form-label {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+#recorridosForm .form-select, 
+#recorridosForm button {
+  margin-bottom: 1rem;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid var(--secondary-color);
+  border-radius: 5px;
+}
+
+#recorridosForm .form-select:focus, 
+#recorridosForm button:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+#recorridosForm button {
+  background-color: var(--secondary-color);
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#recorridosForm button:hover {
+  background-color: var(--highlight-color);
+  color: var(--text-color);
+}
+
+/* Imagen del recorrido */
+#recorridoImg {
+  display: block;
+  max-width: 100%;
+  margin: 1rem auto;
+  border: 2px solid var(--secondary-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}

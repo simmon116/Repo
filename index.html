@@ -16,6 +16,17 @@
     .map-section {
       display: block;
     }
+    .recorridos-section {
+      padding: 2rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+    #recorridoImagen img {
+      max-width: 100%;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+    }
   </style>
 </head>
 
@@ -39,7 +50,7 @@
     </div>
   </section>
 
-  <!-- Details Section (inicialmente oculta) -->
+  <!-- Details Section -->
   <section class="details-section" id="detailsSection">
     <div class="container">
       <h2>Detalles del Salón</h2>
@@ -57,19 +68,16 @@
       <div class="map-container">
         <img src="images/Vista_Aerea.png" alt="Vista aérea del campus" class="map-image">
 
-        <!-- Marcadores ajustados -->
+        <!-- Marcadores -->
         <div class="map-marker" style="top: 35%; left: 18%;" title="Edificio de aulas y laboratorios" onclick="showDetails('Edificio de aulas y laboratorios')">
           <span class="marker-icon">📍</span>
         </div>
-        
         <div class="map-marker" style="top: 85%; left: 40%;" title="Edificio Francisco de Sales" onclick="showDetails('Edificio Francisco de Sales')">
           <span class="marker-icon">📍</span>
         </div>
-        
         <div class="map-marker" style="top: 70%; left: 39%;" title="Bloque recreativo" onclick="showDetails('Bloque recreativo')">
           <span class="marker-icon">📍</span>
         </div>
-  
         <div class="map-marker" style="top: 90%; left: 50%;" title="Salida" onclick="showDetails('Salida')">
           <span class="marker-icon">📍</span>
         </div>
@@ -77,8 +85,40 @@
     </div>
   </section>
 
+  <!-- Recorridos Section -->
+  <section class="recorridos-section">
+    <div class="container">
+      <h2>Recorridos</h2>
+      <form id="recorridosForm">
+        <div class="mb-3">
+          <label for="inicio" class="form-label">Lugar de inicio</label>
+          <select class="form-select" id="inicio" required>
+            <option value="" disabled selected>Seleccione un lugar</option>
+            <option value="Edificio de aulas y laboratorios">Edificio de aulas y laboratorios</option>
+            <option value="Edificio Francisco de Sales">Edificio Francisco de Sales</option>
+            <option value="Bloque recreativo">Bloque recreativo</option>
+            <option value="Salida">Salida</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="final" class="form-label">Lugar de finalización</label>
+          <select class="form-select" id="final" required>
+            <option value="" disabled selected>Seleccione un lugar</option>
+            <option value="Edificio de aulas y laboratorios">Edificio de aulas y laboratorios</option>
+            <option value="Edificio Francisco de Sales">Edificio Francisco de Sales</option>
+            <option value="Bloque recreativo">Bloque recreativo</option>
+            <option value="Salida">Salida</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="mostrarRecorrido()">Mostrar Recorrido</button>
+      </form>
+      <div id="recorridoImagen" class="mt-3" style="display: none;">
+        <img id="recorridoImg" src="" alt="Recorrido" class="img-fluid rounded">
+      </div>
+    </div>
+  </section>
+
   <script>
-    // Objeto con la información de edificios y aulas
     const campusData = {
       "Edificio de aulas y laboratorios": [
         { name: "Aula 101", horario: "8:00 - 10:00", profesor: "Prof. Juan Pérez", grupo: "Grupo A" },
@@ -87,11 +127,12 @@
         { name: "Laboratorio 1", horario: "14:00 - 16:00", profesor: "Prof. Clara Gómez", grupo: "Grupo D" }
       ],
       "Edificio Francisco de Sales": [
-        { name: "Oficina de Administración", horario: "8:00 - 12:00", profesor: "Martín Gómez" },
-        { name: "Oficina de Finanzas", horario: "12:00 - 14:00", profesor: "Ana Torres" },
-        { name: "Oficina de Recursos Humanos", horario: "14:00 - 16:00", profesor: "Laura Martínez" }
+        { name: "Oficina de Administración", horario: "8:00 - 12:00 / 13:00 - 20:00", profesor: "Martín Gómez" },
+        { name: "Oficina de Finanzas", horario: "12:00 - 14:00 / 13:00 - 19:00", profesor: "Ana Torres" },
+        { name: "Oficina de Recursos Humanos", horario: "12:00 - 14:00 / 13:00 - 19:00", profesor: "Laura Martínez" }
       ],
       "Bloque recreativo": [
+        { name: "Gym", horario: "8:00 - 12:00", profesor: "Prof. Claudia Díaz" },
         { name: "Aula de descanso", horario: "8:00 - 12:00 / 13:00 - 20:00", profesor: "Prof. Raúl Torres" },
         { name: "Gym", horario: "8:00 - 12:00 / 13:00 - 20:00", profesor: "Prof. Claudia Díaz" },
         { name: "Ping-pong", horario: "8:00 - 12:00 / 13:00 - 20:00", profesor: "Prof. Esteban Ruiz" }
@@ -101,41 +142,59 @@
       ]
     };
 
-    // Función para mostrar los detalles del edificio o lugar
+    const rutasImagenes = {
+      "Edificio de aulas y laboratorios-Edificio Francisco de Sales": "images/ruta_aulas_francisco.jpeg",
+      "Edificio de aulas y laboratorios-Bloque recreativo": "images/ruta_aulas_recreativo.jpeg",
+      "Edificio de aulas y laboratorios-Salida": "images/ruta_aulas_salida.jpeg",
+      "Edificio Francisco de Sales-Bloque recreativo": "images/ruta_francisco_recreativo.jpeg",
+      "Edificio Francisco de Sales-Salida": "images/ruta_francisco_salida.jpeg",
+      "Bloque recreativo-Salida": "images/ruta_recreativo_salida.jpeg"
+    };
+
     function showDetails(edificio) {
-      const aulas = campusData[edificio];
+  const aulas = campusData[edificio];
+  const salonDetails = document.getElementById('salonDetails');
+  
+  // Comprobamos si hay aulas disponibles para mostrar
+  if (aulas && aulas.length > 0) {
+    salonDetails.innerHTML = aulas.map(aula =>
+      `<div>
+        <h4>${aula.name}</h4>
+        <p><strong>Horario:</strong> ${aula.horario}</p>
+        <p><strong>Profesor:</strong> ${aula.profesor}</p>
+        ${aula.grupo ? `<p><strong>Grupo:</strong> ${aula.grupo}</p>` : ""}
+      </div>`
+    ).join('');
+  } else {
+    salonDetails.innerHTML = `<p>No hay detalles disponibles para este lugar.</p>`;
+  }
+  
+  document.getElementById('salonName').textContent = edificio;
+  document.getElementById('detailsSection').style.display = 'block';
+  document.getElementById('mapSection').style.display = 'none';
+}
 
-      if (aulas) {
-        // Título de la sección con el nombre del edificio
-        document.getElementById('salonName').textContent = edificio;
 
-        // Limpiar el contenedor de detalles anteriores
-        const salonDetails = document.getElementById('salonDetails');
-        salonDetails.innerHTML = ''; // Limpiar detalles previos
-
-        // Mostrar la información de todas las aulas dentro del lugar
-        aulas.forEach(aula => {
-          const aulaDiv = document.createElement('div');
-          aulaDiv.classList.add('aula-info');
-          aulaDiv.innerHTML = `
-            <h4>${aula.name}</h4>
-            <p><strong>Horario:</strong> ${aula.horario}</p>
-            <p><strong>Profesor:</strong> ${aula.profesor}</p>
-            ${aula.grupo ? `<p><strong>Grupo:</strong> ${aula.grupo}</p>` : ''}
-          `;
-          salonDetails.appendChild(aulaDiv);
-        });
-
-        // Mostrar la sección de detalles y ocultar el mapa
-        document.getElementById('detailsSection').style.display = 'block';
-        document.getElementById('mapSection').style.display = 'none';
-      }
-    }
-
-    // Función para volver al mapa
     function goToMap() {
       document.getElementById('detailsSection').style.display = 'none';
       document.getElementById('mapSection').style.display = 'block';
+    }
+
+    function mostrarRecorrido() {
+      const inicio = document.getElementById('inicio').value;
+      const final = document.getElementById('final').value;
+      if (!inicio || !final) {
+        alert("Selecciona ambos puntos.");
+        return;
+      }
+      const rutaKey = `${inicio}-${final}`;
+      const imagenRuta = rutasImagenes[rutaKey] || rutasImagenes[`${final}-${inicio}`];
+      if (imagenRuta) {
+        document.getElementById('recorridoImg').src = imagenRuta;
+        document.getElementById('recorridoImagen').style.display = "block";
+      } else {
+        alert("Ruta no disponible.");
+      }
     }
   </script>
 
